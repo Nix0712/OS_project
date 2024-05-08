@@ -2,3 +2,5 @@ gdb.txt
 .gdbinit
 kernel*
 build/
+breakpoints
+.clang-format
