@@ -157,10 +157,10 @@ inline void RiscV::clear_mask_sstatus(uint64 mask) {
 
 inline uint64 RiscV::read_reg(uint64 reg) {
     uint64 volatile value;
-    __asm__ volatile("ld %[value], 8*%[reg](fp)" : [value] "=r"(value) : [reg] "i"(reg));
+    __asm__ volatile("ld %[value], 8*%[reg](fp)" : [value] "=r"(value) : [reg] "n"(reg));
     return value;
 }
 
 inline void RiscV::write_reg(uint64 reg, uint64 value) {
-    __asm__ volatile("sd %[value], 8*%[reg](fp)" : : [value] "r"(value), [reg] "i"(reg));
+    __asm__ volatile("sd %[value], 8*%[reg](fp)" : : [value] "r"(value), [reg] "n"(reg));
 }

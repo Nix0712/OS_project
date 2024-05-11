@@ -4,14 +4,17 @@
 
 class TCB {
   public:
-    using Body = void (*)();
+    using Body = void (*)(void*);
 
-    static TCB* createCoroutine(Body body);
+    TCB(Body body, void* arg, void* stack);
 
     uint64 getTimeSlice() const;
 
     bool isFinished() const;
     void setFinished(bool finished);
+
+    bool isReady() const;
+    void setReady(bool ready);
 
     static void yield();
 
@@ -19,11 +22,10 @@ class TCB {
 
     ~TCB() {
         if (stack != nullptr)
-            delete[] stack;
+            delete stack;
     }
 
   private:
-    TCB(Body body, uint64 timeSlice);
     // Context will have return adress and stack pointer rest of the registers will be saved on stack
     struct Context {
         uint64 ra;
@@ -32,16 +34,17 @@ class TCB {
 
     static void dispatch();
 
-    // FINISH MANDLING IN ASSEMBLY and finish the sinq
     static void contextSwitch(Context* oldContext, Context* runningContext);
 
     Body body;
-    uint64* stack;
+    void* arg;
+    char* stack;
     Context context;
     uint64 timeSlice;
     bool finished;
+    bool ready;
 
-    static uint64 timeSliceCounter;
+    uint64 timeSliceCounter;
 
     friend class RiscV;
 
