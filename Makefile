@@ -138,4 +138,4 @@ qemu-gdb: ${KERNEL_IMG} .gdbinit
 # http://www.gnu.org/software/make/manual/html_node/Chained-Rules.html
 .PRECIOUS: %.o
 
--include $(wildcard ${DIR_BUILD}/*.d)
+-include $(shell find ${DIR_BUILD} -name "*.d")

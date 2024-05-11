@@ -7,11 +7,7 @@ MemoryAllocator* MemoryAllocator::GetInstance() {
 }
 
 // Memory allocation for given number of bytes
-void* MemoryAllocator::mem_alloc(size_t byte_size) {
-
-    // Calculating space required for one Node of MemoryAllocator and the space needed for allocation
-    size_t num_of_blocks = ((byte_size + MEM_BLOCK_SIZE - 1) + sizeof(AllocMemeBlocks)) / MEM_BLOCK_SIZE;
-
+void* MemoryAllocator::mem_alloc(size_t num_of_blocks) {
     size_t freeBlocks;
 
     // Initial allocation for header Node
@@ -20,13 +16,13 @@ void* MemoryAllocator::mem_alloc(size_t byte_size) {
         if (freeBlocks < num_of_blocks)
             return nullptr;
 
-        head = (AllocMemeBlocks*)HEAP_START_ADDR;
+        head = (AllocMemBlocks*)HEAP_START_ADDR;
         head->BlockNum = num_of_blocks;
-        return (void*)((size_t)head + sizeof(AllocMemeBlocks));
+        return (void*)((size_t)head + sizeof(AllocMemBlocks));
     }
 
     // Searching for free space and allocating required space
-    AllocMemeBlocks* curr = head;
+    AllocMemBlocks* curr = head;
     bool headNode = true;
 
     while (curr) {
@@ -46,7 +42,7 @@ void* MemoryAllocator::mem_alloc(size_t byte_size) {
         // Check if there is spece before first node (if head node doesn't start from the beginning)
         if (freeBlocks >= num_of_blocks) {
 
-            AllocMemeBlocks* newNode = (AllocMemeBlocks*)startAddress;
+            AllocMemBlocks* newNode = (AllocMemBlocks*)startAddress;
             newNode->BlockNum = num_of_blocks;
 
             // Inserting into linked list for allocated space, depending on whether it's before or after the head Node.
@@ -62,7 +58,7 @@ void* MemoryAllocator::mem_alloc(size_t byte_size) {
                     newNode->next->prev = newNode;
             }
 
-            return (void*)((size_t)newNode + sizeof(AllocMemeBlocks));
+            return (void*)((size_t)newNode + sizeof(AllocMemBlocks));
         }
 
         // Making sure we've fully checked the space around the head Node
@@ -76,14 +72,16 @@ void* MemoryAllocator::mem_alloc(size_t byte_size) {
 }
 
 size_t MemoryAllocator::mem_free(void* addr) {
-    AllocMemeBlocks* curr = (AllocMemeBlocks*)((size_t)addr - sizeof(AllocMemeBlocks));
+    AllocMemBlocks* curr = (AllocMemBlocks*)((size_t)addr - sizeof(AllocMemBlocks));
     if (curr == nullptr)
         return -1;
     if (curr == head) {
         head = curr->next;
+        if (head != nullptr)
+            head->prev = nullptr;
         return 0;
     }
-
+    // cheack if it's valid addr
     curr->prev->next = curr->next;
     if (curr->next != nullptr)
         curr->next->prev = curr->prev;

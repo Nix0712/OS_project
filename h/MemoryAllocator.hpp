@@ -5,27 +5,27 @@
 class MemoryAllocator {
   private:
     // LinkedList for free memory blocks
-    struct AllocMemeBlocks {
+    struct AllocMemBlocks {
         size_t BlockNum;
-        AllocMemeBlocks* next;
-        AllocMemeBlocks* prev;
+        AllocMemBlocks* next;
+        AllocMemBlocks* prev;
     };
 
-    AllocMemeBlocks* head;
+    AllocMemBlocks* head;
 
     MemoryAllocator() {
         head = nullptr;
-        head->BlockNum = 0;
-        head->next = nullptr;
-        head->prev = nullptr;
+        // head->BlockNum = 0;
+        // head->next = nullptr;
+        // head->prev = nullptr;
     }
 
   public:
-    void* mem_alloc(size_t byte_size);
+    void* mem_alloc(size_t num_of_blocks);
     size_t mem_free(void* addr);
 
     MemoryAllocator(MemoryAllocator& other) = delete;
-    void operator=(const AllocMemeBlocks&) = delete;
+    void operator=(const AllocMemBlocks&) = delete;
 
     static MemoryAllocator* GetInstance();
 };

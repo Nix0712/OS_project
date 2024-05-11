@@ -2,9 +2,27 @@
 
 #include "hw.h"
 
+enum calls {
+    MEM_ALLOC = 0x01,
+    MEM_FREE,
+    THREAD_CREATE = 0x11,
+    THREAD_EXIT,
+    THREAD_DISPATCH,
+    SEM_OPEN = 0x21,
+    SEM_CLOSE,
+    SEM_WAIT,
+    SEM_SIGNAL,
+    SEM_TIMEDWAIT,
+    SEM_TRYWAIT,
+    TIME_SLEEP = 0x31,
+    GETC = 0x41,
+    PUTC
+};
+
+// size_t num_of_blocks = ((byte_size + MEM_BLOCK_SIZE - 1) + sizeof(AllocMemeBlocks)) / MEM_BLOCK_SIZE;
 void* mem_alloc(size_t size);
 
-int mem_free(void*);
+int mem_free(void* addr);
 
 // Thread class
 class _thread;

@@ -28,8 +28,8 @@ class RiscV {
     // Enum made to get masks for SIE, SPIE and SPP bits inside of sstatus register
     enum SstatusBitMask {
         SSTATUS_SIE = (1 << 1),
-        SSTAUTS_SPIE = (1 << 5),
-        SSTAUTS_SPP = (1 << 8),
+        SSTATUS_SPIE = (1 << 5),
+        SSTATUS_SPP = (1 << 8),
     };
 
     // Enum made to get masks for bit for SSIE, STIE and SEIE inside of sip register
@@ -38,6 +38,8 @@ class RiscV {
         SIP_STIE = (1 << 5),
         SIP_SEIE = (1 << 9),
     };
+
+    void static extract_SSP_SPIE();
 
     static void saveRegisters();
     static void restoreRegisters();
@@ -67,6 +69,14 @@ class RiscV {
 
     static void set_mask_sstatus(uint64 mask);
     static void clear_mask_sstatus(uint64 mask);
+
+    static uint64 read_reg(uint64 reg);
+    static void write_reg(uint64 reg, uint64 value);
+
+    static void supervisorTrap();
+
+  private:
+    static void supervisorTrapHandler();
 };
 
 inline uint64 RiscV::read_stvec() {
@@ -143,4 +153,14 @@ inline void RiscV::set_mask_sstatus(uint64 mask) {
 
 inline void RiscV::clear_mask_sstatus(uint64 mask) {
     __asm__ volatile("csrc sstatus, %[mask]" : : [mask] "r"(mask));
+}
+
+inline uint64 RiscV::read_reg(uint64 reg) {
+    uint64 volatile value;
+    __asm__ volatile("ld %[value], 8*%[reg](fp)" : [value] "=r"(value) : [reg] "i"(reg));
+    return value;
+}
+
+inline void RiscV::write_reg(uint64 reg, uint64 value) {
+    __asm__ volatile("sd %[value], 8*%[reg](fp)" : : [value] "r"(value), [reg] "i"(reg));
 }

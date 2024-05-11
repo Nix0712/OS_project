@@ -41,8 +41,8 @@ template <typename T>
 inline void LinkedList<T>::insertLast(T* data) {
     Node* elem = new Node(data, 0);
     if (tail) {
-        tail->next = elem
-            tail = elem;
+        tail->next = elem;
+        tail = elem;
     } else
         head = tail = elem;
 }
