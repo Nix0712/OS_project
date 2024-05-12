@@ -7,18 +7,18 @@
 #include "../h/syscall_c.hpp"
 
 void RiscV::supervisorTrapHandler() {
-    uint64 scause = read_scause();
-    uint64 sepc = read_sepc();
+    volatile uint64 scause = read_scause();
+    volatile uint64 sepc = read_sepc();
+    volatile uint64 sstatus = read_sstatus();
 
     // Handle the trap
     switch (scause) {
     case 0x8000000000000001UL: { // Supervisor software interrupt (timer)
         Scheduler::updateSleeping();
+        Scheduler::updateWaiting();
 
         TCB::running->timeSliceCounter++;
         if (TCB::running->timeSliceCounter >= TCB::running->getTimeSlice()) {
-            volatile uint64 sepc = read_sepc();
-            volatile uint64 sstatus = read_sstatus();
             TCB::running->timeSliceCounter = 0;
             TCB::dispatch();
             write_sstatus(sstatus);
@@ -82,32 +82,74 @@ void RiscV::supervisorTrapHandler() {
         }
 
         case SEM_OPEN: {
-            // TODO:
+            _Semaphore** a1 = (_Semaphore**)read_reg(11);
+            unsigned a2 = (unsigned)read_reg(12);
+            *a1 = new _Semaphore(a2);
+            TCB::running->sem = *a1;
+            TCB::running->setWorkingSemaphore(1);
+            if (*a1 != nullptr)
+                write_reg(10, 0);
+            else
+                write_reg(10, -1);
             break;
         }
 
         case SEM_CLOSE: {
-            // TODO:
+            _Semaphore* a1 = (_Semaphore*)read_reg(11);
+            a1->~_Semaphore();
+            TCB::running->setWorkingSemaphore(-1);
+            delete a1;
             break;
         }
 
         case SEM_WAIT: {
-            // TODO:
+            _Semaphore* a1 = (_Semaphore*)read_reg(11);
+            if (!a1 || TCB::running->getWorkingSemaphore() == -1) {
+                write_reg(10, -1);
+                break;
+            }
+            a1->wait();
+            write_reg(10, 0);
             break;
         }
 
         case SEM_SIGNAL: {
-            // TODO:
+            _Semaphore* a1 = (_Semaphore*)read_reg(11);
+            if (!a1) {
+                write_reg(10, -1);
+                break;
+            }
+            a1->signal();
+            write_reg(10, 0);
             break;
         }
 
         case SEM_TIMEDWAIT: {
-            // TODO:
+            _Semaphore* a1 = (_Semaphore*)read_reg(11);
+            time_t a2 = (time_t)read_reg(12);
+            if (!a1) {
+                write_reg(10, -1);
+                break;
+            }
+            a1->timedwait(a2);
+            if (a1->isTimedOut())
+                write_reg(10, -2);
+            else
+                write_reg(10, 0);
             break;
         }
 
         case SEM_TRYWAIT: {
-            // TODO:
+            _Semaphore* a1 = (_Semaphore*)read_reg(11);
+            if (!a1) {
+                write_reg(10, -1);
+                break;
+            }
+            a1->trywait();
+            if (a1->getIsBlockedOnTry())
+                write_reg(10, 0);
+            else
+                write_reg(10, 1);
             break;
         }
 

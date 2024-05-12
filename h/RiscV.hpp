@@ -12,10 +12,10 @@
         sip -> containing information on pending interrupts (Supervisor Interrupt Registers)
         sstatus -> keeps track of the processor’s current operating state (Supervisor Status Register)
 
-    Mask for SIE, SPIE and SSP are applied to value in sstatus register
+    Mask for SIE, SPIE and SPP are applied to value in sstatus register
         SIE -> enables or disables all interrupts in supervisor mode.
         SPIE -> indicates whether supervisor interrupts were enabled prior to trapping into supervisor mode
-        SSP -> indicates the privilege level at which a hart was executing before entering supervisor mode
+        SPP -> indicates the privilege level at which a hart was executing before entering supervisor mode
 
     Mask for SSIE, STIE and SEIE are applied to value in sip register
         SSIE -> interrupt-enable bits for supervisor-level software interrupts

@@ -22,6 +22,8 @@ class LinkedList {
     void insertFirst(T* data);
     void insertLast(T* data);
 
+    void insertSorted(T* data);
+
     T* removeFirst();
     T* removeLast();
 
@@ -45,6 +47,25 @@ inline void LinkedList<T>::insertLast(T* data) {
         tail = elem;
     } else
         head = tail = elem;
+}
+
+template <typename T>
+inline void LinkedList<T>::insertSorted(T* data) {
+    if (head == 0)
+        head = new Node(data, 0);
+    Node* curr = head;
+    Node* prev = 0;
+
+    while (curr && curr->data->wakeUpTime < data->wakeUpTime) {
+        prev = curr;
+        curr = curr->next;
+    }
+
+    if (prev) {
+        prev->next = new Node(data, curr);
+    } else {
+        head = new Node(data, curr);
+    }
 }
 
 template <typename T>

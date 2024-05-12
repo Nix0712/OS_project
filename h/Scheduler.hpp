@@ -15,6 +15,7 @@ class Scheduler {
     static uint64 time;
     static LinkedList<TCB> readyThreadQueue;
     static LinkedList<SleepingNode> sleepingThreadQueue;
+    static LinkedList<SleepingNode> waitingThreadQueue;
 
   public:
     static TCB* getReady();
@@ -24,4 +25,10 @@ class Scheduler {
     static void putSleeping(TCB* tcb, time_t wakeUpTime);
 
     static void updateSleeping();
+
+    static void putWaiting(TCB* tcb);
+
+    static void updateWaiting();
+
+    static uint64 getTime();
 };

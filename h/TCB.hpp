@@ -1,6 +1,11 @@
 #pragma once
 
+#include "../h/RiscV.hpp"
+#include "../h/TCB.hpp"
 #include "../h/hw.h"
+#include "../h/syscall_c.hpp"
+
+class _Semaphore;
 
 class TCB {
   public:
@@ -16,7 +21,12 @@ class TCB {
     bool isReady() const;
     void setReady(bool ready);
 
-    static void yield();
+    int getWorkingSemaphore() const;
+    void setWorkingSemaphore(int workingSemaphore);
+
+    _Semaphore* getSemaphore() const;
+
+    static void dispatch();
 
     static TCB* running;
 
@@ -32,8 +42,6 @@ class TCB {
         uint64 sp;
     };
 
-    static void dispatch();
-
     static void contextSwitch(Context* oldContext, Context* runningContext);
 
     Body body;
@@ -43,6 +51,8 @@ class TCB {
     uint64 timeSlice;
     bool finished;
     bool ready;
+    int workingSemaphore; // -1 if it's not in semaphore and it's blocked, 0 if it's blocked and 1 if it's blocked
+    _Semaphore* sem;      // If is connected to semaphore
 
     uint64 timeSliceCounter;
 

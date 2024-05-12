@@ -4,7 +4,7 @@
 
 class MemoryAllocator {
   private:
-    // LinkedList for free memory blocks
+    // LinkedList for allocated memory blocks
     struct AllocMemBlocks {
         size_t BlockNum;
         AllocMemBlocks* next;
@@ -15,9 +15,6 @@ class MemoryAllocator {
 
     MemoryAllocator() {
         head = nullptr;
-        // head->BlockNum = 0;
-        // head->next = nullptr;
-        // head->prev = nullptr;
     }
 
   public:

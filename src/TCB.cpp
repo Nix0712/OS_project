@@ -5,7 +5,7 @@
 
 TCB* TCB::running = nullptr;
 
-TCB::TCB(Body body, void* arg, void* stack) : body(body), arg(arg), stack((char*)stack), context({(uint64)&threadWrapper, stack != nullptr ? (uint64) & ((char*)stack)[DEFAULT_STACK_SIZE] : 0}), timeSlice(2), finished(false), ready(true) {
+TCB::TCB(Body body, void* arg, void* stack) : body(body), arg(arg), stack((char*)stack), context({(uint64)&threadWrapper, stack != nullptr ? (uint64) & ((char*)stack)[DEFAULT_STACK_SIZE] : 0}), timeSlice(2), finished(false), ready(true), workingSemaphore(0), sem(0) {
 }
 
 uint64 TCB::getTimeSlice() const {
@@ -24,6 +24,18 @@ bool TCB::isReady() const {
 }
 void TCB::setReady(bool ready) {
     this->ready = ready;
+}
+
+int TCB::getWorkingSemaphore() const {
+    return this->workingSemaphore;
+}
+
+void TCB::setWorkingSemaphore(int workingSemaphore) {
+    this->workingSemaphore = workingSemaphore;
+}
+
+_Semaphore* TCB::getSemaphore() const {
+    return sem;
 }
 
 void TCB::dispatch() {
