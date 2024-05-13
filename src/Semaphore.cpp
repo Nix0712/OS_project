@@ -2,12 +2,10 @@
 #include "../h/Scheduler.hpp"
 
 _Semaphore::~_Semaphore() {
-    TCB* curr = (TCB*)blocked.removeFirst();
+    TCB* curr = blocked.popTCB();
     while (curr) {
-        if (curr->isFinished())
-            curr->setWorkingSemaphore(-1);
         Scheduler::putReady(curr);
-        curr = (TCB*)blocked.removeFirst();
+        curr = blocked.popTCB();
     }
 }
 
@@ -22,29 +20,20 @@ void _Semaphore::signal() {
 }
 
 void _Semaphore::timedwait(time_t timeout) {
-    this->timeout = timeout;
-    TimedOut = false;
-    Scheduler::putWaiting(TCB::running);
-    block();
 }
 
 void _Semaphore::trywait() {
-    if (val - 1 < 0) {
-        val--;
-        isBlockedOnTry = true;
-        block();
-    } else
-        isBlockedOnTry = false;
 }
 
 void _Semaphore::block() {
-    TCB::running->setWorkingSemaphore(0);
-    blocked.insertLast(TCB::running);
+    TCB::running->setReady(false);
+    blocked.pushTCB(TCB::running);
     TCB::dispatch();
 }
 
 void _Semaphore::deblock() {
-    TCB* t = blocked.removeFirst();
-    if (t)
-        Scheduler::putReady(t);
+    TCB* tcb = blocked.popTCB();
+    if (tcb) {
+        Scheduler::putReady(tcb);
+    }
 }

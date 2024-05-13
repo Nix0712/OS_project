@@ -5,8 +5,6 @@
 #include "../h/hw.h"
 #include "../h/syscall_c.hpp"
 
-class _Semaphore;
-
 class TCB {
   public:
     using Body = void (*)(void*);
@@ -21,18 +19,13 @@ class TCB {
     bool isReady() const;
     void setReady(bool ready);
 
-    int getWorkingSemaphore() const;
-    void setWorkingSemaphore(int workingSemaphore);
-
-    _Semaphore* getSemaphore() const;
-
     static void dispatch();
 
     static TCB* running;
 
     ~TCB() {
         if (stack != nullptr)
-            delete stack;
+            mem_free(stack);
     }
 
   private:
@@ -51,8 +44,6 @@ class TCB {
     uint64 timeSlice;
     bool finished;
     bool ready;
-    int workingSemaphore; // -1 if it's not in semaphore and it's blocked, 0 if it's blocked and 1 if it's blocked
-    _Semaphore* sem;      // If is connected to semaphore
 
     uint64 timeSliceCounter;
 

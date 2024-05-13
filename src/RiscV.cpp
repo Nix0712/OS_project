@@ -14,15 +14,14 @@ void RiscV::supervisorTrapHandler() {
     // Handle the trap
     switch (scause) {
     case 0x8000000000000001UL: { // Supervisor software interrupt (timer)
+        Scheduler::updateTime();
         Scheduler::updateSleeping();
-        Scheduler::updateWaiting();
+        Scheduler::updateTerminated();
 
         TCB::running->timeSliceCounter++;
         if (TCB::running->timeSliceCounter >= TCB::running->getTimeSlice()) {
             TCB::running->timeSliceCounter = 0;
             TCB::dispatch();
-            write_sstatus(sstatus);
-            write_sepc(sepc);
         }
 
         clear_mask_sip(SIP_SSIE);
@@ -61,6 +60,7 @@ void RiscV::supervisorTrapHandler() {
             void* a4 = (void*)read_reg(14);
             TCB* thread = new TCB(a2, a3, a4);
             *(TCB**)a1 = thread;
+
             if (thread != nullptr) {
                 Scheduler::putReady(thread);
                 write_reg(10, 0);
@@ -84,30 +84,26 @@ void RiscV::supervisorTrapHandler() {
         case SEM_OPEN: {
             _Semaphore** a1 = (_Semaphore**)read_reg(11);
             unsigned a2 = (unsigned)read_reg(12);
-            *a1 = new _Semaphore(a2);
-            TCB::running->sem = *a1;
-            TCB::running->setWorkingSemaphore(1);
-            if (*a1 != nullptr)
-                write_reg(10, 0);
-            else
-                write_reg(10, -1);
+            _Semaphore* sem = new _Semaphore(a2);
+            *a1 = sem;
+            write_reg(10, 0);
             break;
         }
 
         case SEM_CLOSE: {
             _Semaphore* a1 = (_Semaphore*)read_reg(11);
             a1->~_Semaphore();
-            TCB::running->setWorkingSemaphore(-1);
-            delete a1;
+            MemoryAllocator* memAllocator = MemoryAllocator::GetInstance();
+            size_t retVal = memAllocator->mem_free(a1);
+            if (retVal == 0)
+                write_reg(10, 0);
+            else
+                write_reg(10, -1);
             break;
         }
 
         case SEM_WAIT: {
             _Semaphore* a1 = (_Semaphore*)read_reg(11);
-            if (!a1 || TCB::running->getWorkingSemaphore() == -1) {
-                write_reg(10, -1);
-                break;
-            }
             a1->wait();
             write_reg(10, 0);
             break;
@@ -127,35 +123,18 @@ void RiscV::supervisorTrapHandler() {
         case SEM_TIMEDWAIT: {
             _Semaphore* a1 = (_Semaphore*)read_reg(11);
             time_t a2 = (time_t)read_reg(12);
-            if (!a1) {
-                write_reg(10, -1);
-                break;
-            }
             a1->timedwait(a2);
-            if (a1->isTimedOut())
-                write_reg(10, -2);
-            else
-                write_reg(10, 0);
             break;
         }
 
         case SEM_TRYWAIT: {
             _Semaphore* a1 = (_Semaphore*)read_reg(11);
-            if (!a1) {
-                write_reg(10, -1);
-                break;
-            }
             a1->trywait();
-            if (a1->getIsBlockedOnTry())
-                write_reg(10, 0);
-            else
-                write_reg(10, 1);
             break;
         }
 
         case TIME_SLEEP: {
             time_t a1 = (time_t)read_reg(11);
-            TCB::running->setReady(false);
             Scheduler::putSleeping(TCB::running, a1);
             TCB::dispatch();
             write_reg(10, 0);
@@ -185,6 +164,7 @@ void RiscV::supervisorTrapHandler() {
     }
 
     // Return from trap
+    write_sstatus(sstatus);
     write_sepc(sepc);
 }
 

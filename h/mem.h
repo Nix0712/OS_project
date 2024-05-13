@@ -7,15 +7,13 @@
  */
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
 
-    void* __mem_alloc(size_t size);
+void* __mem_alloc(size_t size);
 
-    int __mem_free(void* ptr);
-
+int __mem_free(void* ptr);
 
 #ifdef __cplusplus
-    }
+}
 #endif
-

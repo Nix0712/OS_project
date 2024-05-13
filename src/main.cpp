@@ -6,9 +6,9 @@
 extern void userMain();
 
 void userMainWrapper(void* arg) {
-    // Semaphore* sem = (Semaphore*)arg;
+    Semaphore* sem = (Semaphore*)arg;
     userMain();
-    // sem->signal();
+    sem->signal();
 }
 
 void idle(void* arg) {
@@ -21,19 +21,16 @@ int main() {
     RiscV::write_stvec((uint64)&RiscV::supervisorTrap);
 
     TCB::running = new TCB(nullptr, nullptr, nullptr);
-
     Thread* idleThread = new Thread(idle, nullptr);
 
     Semaphore* sem = new Semaphore(0);
-
-    Thread* userThread = new Thread(userMainWrapper, nullptr);
-
     idleThread->start();
+
+    Thread* userThread = new Thread(userMainWrapper, sem);
     userThread->start();
 
-    while (true) {
-        Thread::dispatch();
-    }
+    sem->wait();
+
     delete sem;
     return 0;
 }

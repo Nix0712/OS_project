@@ -5,7 +5,7 @@
 
 TCB* TCB::running = nullptr;
 
-TCB::TCB(Body body, void* arg, void* stack) : body(body), arg(arg), stack((char*)stack), context({(uint64)&threadWrapper, stack != nullptr ? (uint64) & ((char*)stack)[DEFAULT_STACK_SIZE] : 0}), timeSlice(2), finished(false), ready(true), workingSemaphore(0), sem(0) {
+TCB::TCB(Body body, void* arg, void* stack) : body(body), arg(arg), stack((char*)stack), context({(uint64)&threadWrapper, stack != nullptr ? (uint64) & ((char*)stack)[DEFAULT_STACK_SIZE] : 0}), timeSlice(2), finished(false), ready(true) {
 }
 
 uint64 TCB::getTimeSlice() const {
@@ -22,20 +22,9 @@ void TCB::setFinished(bool finished) {
 bool TCB::isReady() const {
     return this->ready;
 }
+
 void TCB::setReady(bool ready) {
     this->ready = ready;
-}
-
-int TCB::getWorkingSemaphore() const {
-    return this->workingSemaphore;
-}
-
-void TCB::setWorkingSemaphore(int workingSemaphore) {
-    this->workingSemaphore = workingSemaphore;
-}
-
-_Semaphore* TCB::getSemaphore() const {
-    return sem;
 }
 
 void TCB::dispatch() {
@@ -43,10 +32,12 @@ void TCB::dispatch() {
     if (!old->isFinished() && old->isReady()) {
         Scheduler::putReady(old);
     } else if (old->finished) {
-        delete old;
+        mem_free(old->stack);
+        mem_free(old);
     }
     running = Scheduler::getReady();
-    TCB::contextSwitch(&old->context, &running->context);
+    if (old != running)
+        TCB::contextSwitch(&old->context, &running->context);
 }
 
 void TCB::threadWrapper() {
