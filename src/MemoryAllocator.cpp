@@ -12,12 +12,14 @@ void* MemoryAllocator::mem_alloc(size_t num_of_blocks) {
 
     // Initial allocation for header Node
     if (head == nullptr) {
-        freeBlocks = ((size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR - sizeof(AllocMemBlocks)) / MEM_BLOCK_SIZE;
+        freeBlocks = ((size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR) / MEM_BLOCK_SIZE;
         if (freeBlocks < num_of_blocks)
             return nullptr;
 
         head = (AllocMemBlocks*)HEAP_START_ADDR;
         head->BlockNum = num_of_blocks;
+        head->next = nullptr;
+        head->prev = nullptr;
         return (void*)((size_t)head + sizeof(AllocMemBlocks));
     }
 
@@ -30,11 +32,11 @@ void* MemoryAllocator::mem_alloc(size_t num_of_blocks) {
         void* endAddress;
 
         // If our current position is the head Node, it's essential to verify whether there is any available space before the head
-        if (curr->prev == nullptr && headNode) {
+        if (headNode && curr->prev == nullptr) {
             startAddress = (void*)HEAP_START_ADDR;
             endAddress = (void*)curr;
         } else {
-            startAddress = (void*)(curr + (curr->BlockNum * MEM_BLOCK_SIZE));
+            startAddress = (void*)((uint64)curr + (curr->BlockNum * MEM_BLOCK_SIZE));
             endAddress = (curr->next == nullptr) ? (void*)(HEAP_END_ADDR) : (void*)(curr->next);
         }
         freeBlocks = ((size_t)endAddress - (size_t)startAddress) / MEM_BLOCK_SIZE;
@@ -50,6 +52,7 @@ void* MemoryAllocator::mem_alloc(size_t num_of_blocks) {
                 newNode->next = curr;
                 newNode->prev = nullptr;
                 curr->prev = newNode;
+                head = newNode;
             } else {
                 newNode->next = curr->next;
                 newNode->prev = curr;
