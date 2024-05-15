@@ -13,7 +13,7 @@ void Scheduler::putReady(TCB* tcb) {
 void Scheduler::putSleeping(TCB* tcb, time_t wakeUpTime) {
     SleepingNode* sn = new SleepingNode;
     sn->tcb = tcb;
-    sn->wakeUpTime = wakeUpTime;
+    sn->wakeUpTime = wakeUpTime + time;
     sleepingThreadQueue.pushSortedSTQ(sn);
     tcb->setReady(false);
 }
@@ -21,7 +21,7 @@ void Scheduler::putSleeping(TCB* tcb, time_t wakeUpTime) {
 void Scheduler::putTerminated(TCB* tcb, time_t wakeUpTime) {
     SleepingNode* sn = new SleepingNode;
     sn->tcb = tcb;
-    sn->wakeUpTime = wakeUpTime;
+    sn->wakeUpTime = wakeUpTime + time;
     terminatedThreadQueue.pushSortedSTQ(sn);
     tcb->setReady(false);
 }

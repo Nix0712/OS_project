@@ -14,6 +14,7 @@ void RiscV::supervisorTrapHandler() {
     // Handle the trap
     switch (scause) {
     case 0x8000000000000001UL: { // Supervisor software interrupt (timer)
+        clear_mask_sip(SIP_SSIE);
         Scheduler::updateTime();
         Scheduler::updateSleeping();
         Scheduler::updateTerminated();
@@ -24,7 +25,6 @@ void RiscV::supervisorTrapHandler() {
             TCB::dispatch();
         }
 
-        clear_mask_sip(SIP_SSIE);
         break;
     }
     case 0x8000000000000009UL: { // Supervisor external interrupt (console)
@@ -155,11 +155,15 @@ void RiscV::supervisorTrapHandler() {
         default:
             break;
         }
+        break;
     }
-
+    case 0x0000000000000002UL: { // U-mode illegal instruction
+        __putc('J');
+        __putc('E');
+        __putc('S');
+        break;
+    }
     default:
-        // Unexpected trap
-        // print scause, sepc, stval
         break;
     }
 

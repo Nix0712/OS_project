@@ -6,13 +6,13 @@ MemoryAllocator* MemoryAllocator::GetInstance() {
     return &memallocator_;
 }
 
-// Memory allocation for given number of bytes
+// Memory allocation for given number of blokcs
 void* MemoryAllocator::mem_alloc(size_t num_of_blocks) {
     size_t freeBlocks;
 
     // Initial allocation for header Node
     if (head == nullptr) {
-        freeBlocks = ((size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR) / MEM_BLOCK_SIZE;
+        freeBlocks = ((size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR - sizeof(AllocMemBlocks)) / MEM_BLOCK_SIZE;
         if (freeBlocks < num_of_blocks)
             return nullptr;
 

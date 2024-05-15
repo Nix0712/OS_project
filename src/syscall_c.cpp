@@ -1,7 +1,7 @@
 #include "../h/syscall_c.hpp"
 
 void* mem_alloc(size_t size) {
-    size_t num_of_blocks = ((size + MEM_BLOCK_SIZE - 1) + 3 * sizeof(size_t)) / MEM_BLOCK_SIZE;
+    size_t num_of_blocks = (size + MEM_BLOCK_SIZE - 1) / MEM_BLOCK_SIZE;
 
     __asm__ volatile("mv a1, %[num_of_blocks]" : : [num_of_blocks] "r"(num_of_blocks));
     __asm__ volatile("mv a0, %0" : : "r"(MEM_ALLOC));
@@ -29,7 +29,7 @@ int thread_create(thread_t* handle, void (*start_routine)(void*), void* arg) {
     if (stack == nullptr) {
         return -1;
     }
-    __asm__ volatile("mv a4, %0" : : "r"(stack));
+    __asm__ volatile("mv a4, %[stack]" : : [stack] "r"(stack));
     __asm__ volatile("mv a3, %0" : : "r"(arg));
     __asm__ volatile("mv a2, %0" : : "r"(start_routine));
     __asm__ volatile("mv a1, %0" : : "r"(handle));

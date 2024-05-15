@@ -1,4 +1,5 @@
 #include "../h/List.hpp"
+#include "../h/MemoryAllocator.hpp"
 
 void Queue::pushTCB(TCB* data) {
     Node* newNode = new Node;
@@ -44,23 +45,29 @@ void Queue::pushSortedSTQ(SleepingNode* data) {
 }
 
 TCB* Queue::popTCB() {
+    MemoryAllocator* alloc = MemoryAllocator::GetInstance();
     if (head == nullptr)
         return nullptr;
     Node* temp = head;
     head = head->next;
     TCB* tcb = (TCB*)temp->data;
-    delete temp;
+    if (head == nullptr)
+        tail = nullptr;
+    alloc->mem_free(temp);
     length--;
     return tcb;
 }
 
 SleepingNode* Queue::popSTQ() {
+    MemoryAllocator* alloc = MemoryAllocator::GetInstance();
     if (head == nullptr)
         return nullptr;
     Node* temp = head;
     head = head->next;
     SleepingNode* sleepingNode = (SleepingNode*)temp->data;
-    delete temp;
+    if (head == nullptr)
+        tail = nullptr;
+    alloc->mem_free(temp);
     length--;
     return sleepingNode;
 }

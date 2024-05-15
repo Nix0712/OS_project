@@ -1,11 +1,12 @@
 #include "../h/TCB.hpp"
+#include "../h/MemoryAllocator.hpp"
 #include "../h/RiscV.hpp"
 #include "../h/Scheduler.hpp"
 #include "../h/syscall_c.hpp"
 
 TCB* TCB::running = nullptr;
 
-TCB::TCB(Body body, void* arg, void* stack) : body(body), arg(arg), stack((char*)stack), context({(uint64)&threadWrapper, stack != nullptr ? (uint64) & ((char*)stack)[DEFAULT_STACK_SIZE] : 0}), timeSlice(2), finished(false), ready(true) {
+TCB::TCB(Body body, void* arg, void* stack) : body(body), arg(arg), stack((char*)stack), context({(uint64)&threadWrapper, stack != nullptr ? (uint64) & ((char*)stack)[DEFAULT_STACK_SIZE] : 0}), timeSlice(DEFAULT_TIME_SLICE), finished(false), ready(true), timeSliceCounter(0) {
 }
 
 uint64 TCB::getTimeSlice() const {
@@ -29,11 +30,12 @@ void TCB::setReady(bool ready) {
 
 void TCB::dispatch() {
     TCB* old = running;
+    MemoryAllocator* alloc = MemoryAllocator::GetInstance();
     if (!old->isFinished() && old->isReady()) {
         Scheduler::putReady(old);
     } else if (old->finished) {
-        mem_free(old->stack);
-        mem_free(old);
+        alloc->mem_free(old->stack);
+        alloc->mem_free(old);
     }
     running = Scheduler::getReady();
     if (old != running)
