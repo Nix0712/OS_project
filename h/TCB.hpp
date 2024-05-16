@@ -19,6 +19,12 @@ class TCB {
     bool isReady() const;
     void setReady(bool ready);
 
+    bool GetIsClosedInSemaphore() const;
+    void SetIsClosedInSemaphore(bool closedInSemaphore);
+
+    uint64 getWaitTime() const;
+    void setWaitTime(uint64 waitTime);
+
     static void dispatch();
 
     static TCB* running;
@@ -46,6 +52,10 @@ class TCB {
     bool ready;
 
     uint64 timeSliceCounter;
+
+    bool closedInSemaphore;
+
+    uint64 waitTime;
 
     friend class RiscV;
 

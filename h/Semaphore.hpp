@@ -10,16 +10,20 @@ class _Semaphore {
     _Semaphore(unsigned init = 1) : val(init), blocked() {}
     ~_Semaphore();
 
-    void wait();
+    int wait();
     void signal();
-    void timedwait(time_t timeout);
-    void trywait();
+    int timedwait(time_t timeout);
+    int trywait();
 
   protected:
     void block();
     void deblock();
 
   private:
+    enum ErrorCodes {
+        SEMDEAD = -1,
+        TIMEOUT = -2,
+    };
     int val;
     Queue blocked;
 };

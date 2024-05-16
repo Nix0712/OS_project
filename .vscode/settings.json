@@ -21,6 +21,7 @@
         "deque": "cpp",
         "list": "cpp",
         "vector": "cpp",
-        "system_error": "cpp"
+        "system_error": "cpp",
+        "cstdint": "cpp"
     }
 }

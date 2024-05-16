@@ -17,7 +17,6 @@ void RiscV::supervisorTrapHandler() {
         clear_mask_sip(SIP_SSIE);
         Scheduler::updateTime();
         Scheduler::updateSleeping();
-        Scheduler::updateTerminated();
 
         TCB::running->timeSliceCounter++;
         if (TCB::running->timeSliceCounter >= TCB::running->getTimeSlice()) {
@@ -104,8 +103,12 @@ void RiscV::supervisorTrapHandler() {
 
         case SEM_WAIT: {
             _Semaphore* a1 = (_Semaphore*)read_reg(11);
-            a1->wait();
-            write_reg(10, 0);
+            if (!a1) {
+                write_reg(10, -1);
+                break;
+            }
+            int ret = a1->wait();
+            write_reg(10, ret);
             break;
         }
 
@@ -122,14 +125,24 @@ void RiscV::supervisorTrapHandler() {
 
         case SEM_TIMEDWAIT: {
             _Semaphore* a1 = (_Semaphore*)read_reg(11);
+            if (!a1) {
+                write_reg(10, -3);
+                break;
+            }
             time_t a2 = (time_t)read_reg(12);
             a1->timedwait(a2);
+            write_reg(10, -1);
             break;
         }
 
         case SEM_TRYWAIT: {
             _Semaphore* a1 = (_Semaphore*)read_reg(11);
-            a1->trywait();
+            if (a1) {
+                int ret = a1->trywait();
+                write_reg(10, ret);
+            } else {
+                write_reg(10, -1);
+            }
             break;
         }
 
@@ -161,6 +174,11 @@ void RiscV::supervisorTrapHandler() {
         __putc('J');
         __putc('E');
         __putc('S');
+        // uint32 val = 0x5555;
+        // uint64 addr = 0x100000;
+        // __asm__ volatile("sw %[val], 0(%[addr])" : : [val] "r"(val), [addr] "r"(addr));
+        TCB::running->setFinished(true);
+        TCB::dispatch();
         break;
     }
     default:

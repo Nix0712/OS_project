@@ -32,5 +32,6 @@ int main() {
     sem->wait();
 
     delete sem;
+
     return 0;
 }

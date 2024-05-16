@@ -5,13 +5,20 @@ _Semaphore::~_Semaphore() {
     TCB* curr = blocked.popTCB();
     while (curr) {
         Scheduler::putReady(curr);
+
         curr = blocked.popTCB();
     }
 }
 
-void _Semaphore::wait() {
+int _Semaphore::wait() {
     if (--val < 0)
         block();
+
+    // If semaphore was closed while waiting
+    if (TCB::running->GetIsClosedInSemaphore()) {
+        return -1;
+    }
+    return 0;
 }
 
 void _Semaphore::signal() {
@@ -19,10 +26,22 @@ void _Semaphore::signal() {
         deblock();
 }
 
-void _Semaphore::timedwait(time_t timeout) {
+int _Semaphore::timedwait(time_t timeout) {
+    TCB::running->setWaitTime(Scheduler::getTime() + timeout);
+    int ret = wait();
+    if (ret == -1)
+        return SEMDEAD;
+    else if (Scheduler::getTime() >= TCB::running->getWaitTime())
+        return TIMEOUT;
+    return 0;
 }
 
-void _Semaphore::trywait() {
+int _Semaphore::trywait() {
+    val--;
+    if (val < 0) {
+        return 0;
+    } else
+        return 1;
 }
 
 void _Semaphore::block() {

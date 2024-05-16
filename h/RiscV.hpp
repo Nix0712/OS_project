@@ -71,7 +71,7 @@ class RiscV {
     static void clear_mask_sstatus(uint64 mask);
 
     static uint64 read_reg(uint64 reg);
-    static void write_reg(uint64 reg, uint64 value);
+    static void write_reg(uint64 reg, int value);
 
     static void supervisorTrap();
 
@@ -161,6 +161,6 @@ inline uint64 RiscV::read_reg(uint64 reg) {
     return value;
 }
 
-inline void RiscV::write_reg(uint64 reg, uint64 value) {
+inline void RiscV::write_reg(uint64 reg, int value) {
     __asm__ volatile("sd %[value], 8*%[reg](fp)" : : [value] "r"(value), [reg] "n"(reg));
 }

@@ -4,7 +4,6 @@
 uint64 Scheduler::time = 0;
 Queue Scheduler::readyThreadQueue;
 Queue Scheduler::sleepingThreadQueue;
-Queue Scheduler::terminatedThreadQueue;
 
 void Scheduler::putReady(TCB* tcb) {
     readyThreadQueue.pushTCB(tcb);
@@ -18,18 +17,13 @@ void Scheduler::putSleeping(TCB* tcb, time_t wakeUpTime) {
     tcb->setReady(false);
 }
 
-void Scheduler::putTerminated(TCB* tcb, time_t wakeUpTime) {
-    SleepingNode* sn = new SleepingNode;
-    sn->tcb = tcb;
-    sn->wakeUpTime = wakeUpTime + time;
-    terminatedThreadQueue.pushSortedSTQ(sn);
-    tcb->setReady(false);
-}
-
 TCB* Scheduler::getReady() {
     return readyThreadQueue.popTCB();
 }
 
+uint64 Scheduler::getTime() {
+    return time;
+}
 void Scheduler::updateTime() {
     time++;
 }
@@ -43,20 +37,6 @@ void Scheduler::updateSleeping() {
             memAllocator->mem_free(sn);
         } else {
             sleepingThreadQueue.pushSortedSTQ(sn);
-            break;
-        }
-    }
-}
-
-void Scheduler::updateTerminated() {
-    while (terminatedThreadQueue.size() > 0) {
-        SleepingNode* sn = terminatedThreadQueue.popSTQ();
-        if (sn->wakeUpTime <= time) {
-            putReady(sn->tcb);
-            MemoryAllocator* memAllocator = MemoryAllocator::GetInstance();
-            memAllocator->mem_free(sn);
-        } else {
-            terminatedThreadQueue.pushSortedSTQ(sn);
             break;
         }
     }
