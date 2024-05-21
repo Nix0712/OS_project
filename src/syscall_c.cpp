@@ -102,7 +102,9 @@ int sem_timedwait(sem_t id, time_t timeout) {
 
     __asm__ volatile("ecall");
 
-    return 0;
+    int volatile ret;
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+    return ret;
 }
 
 int sem_trywait(sem_t id) {

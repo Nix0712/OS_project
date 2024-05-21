@@ -17,6 +17,7 @@ void RiscV::supervisorTrapHandler() {
         clear_mask_sip(SIP_SSIE);
         Scheduler::updateTime();
         Scheduler::updateSleeping();
+        Scheduler::updateTimed();
 
         TCB::running->timeSliceCounter++;
         if (TCB::running->timeSliceCounter >= TCB::running->getTimeSlice()) {
@@ -130,8 +131,8 @@ void RiscV::supervisorTrapHandler() {
                 break;
             }
             time_t a2 = (time_t)read_reg(12);
-            a1->timedwait(a2);
-            write_reg(10, -1);
+            int ret = a1->timedwait(a2);
+            write_reg(10, ret);
             break;
         }
 

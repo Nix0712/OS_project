@@ -5,6 +5,8 @@
 #include "../h/hw.h"
 #include "../h/syscall_c.hpp"
 
+class _Semaphore;
+
 class TCB {
   public:
     using Body = void (*)(void*);
@@ -22,8 +24,14 @@ class TCB {
     bool GetIsClosedInSemaphore() const;
     void SetIsClosedInSemaphore(bool closedInSemaphore);
 
+    bool isTimedWaitExpired() const;
+    void setTimedWaitExpired(bool timedWaitExpired);
+
     uint64 getWaitTime() const;
     void setWaitTime(uint64 waitTime);
+
+    _Semaphore* getSemaphore() const;
+    void setSemaphore(_Semaphore* semaphore);
 
     static void dispatch();
 
@@ -56,6 +64,9 @@ class TCB {
     bool closedInSemaphore;
 
     uint64 waitTime;
+
+    _Semaphore* semaphore;
+    bool timedWaitExpired;
 
     friend class RiscV;
 

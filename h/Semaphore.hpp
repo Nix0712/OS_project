@@ -15,6 +15,10 @@ class _Semaphore {
     int timedwait(time_t timeout);
     int trywait();
 
+    void removeFromBlockedList(TCB* tcb) {
+        blocked.removeTCB(tcb);
+    }
+
   protected:
     void block();
     void deblock();

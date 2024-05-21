@@ -18,6 +18,8 @@ class Queue {
     void* back();
     int size();
     bool empty();
+    void removeTCB(TCB* tcb);
+    void removeSTQ(SleepingNode* sn);
 
   private:
     struct Node {

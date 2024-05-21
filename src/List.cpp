@@ -93,3 +93,50 @@ bool Queue::empty() {
         return true;
     return false;
 }
+
+void Queue::removeTCB(TCB* tcb) {
+    Node* current = head;
+    Node* previous = nullptr;
+    while (current) {
+        if (current->data == (void*)tcb) {
+            if (previous == nullptr) {
+                head = current->next;
+            } else {
+                previous->next = current->next;
+            }
+            if (current == tail) {
+                tail = previous;
+            }
+            MemoryAllocator* alloc = MemoryAllocator::GetInstance();
+            alloc->mem_free(current);
+            length--;
+            return;
+        }
+        previous = current;
+        current = current->next;
+    }
+}
+
+// In case of timedWait()
+void Queue::removeSTQ(SleepingNode* sn) {
+    Node* current = head;
+    Node* previous = nullptr;
+    while (current) {
+        if (current->data == (void*)sn) {
+            if (previous == nullptr) {
+                head = current->next;
+            } else {
+                previous->next = current->next;
+            }
+            if (current == tail) {
+                tail = previous;
+            }
+            MemoryAllocator* alloc = MemoryAllocator::GetInstance();
+            alloc->mem_free(current);
+            length--;
+            return;
+        }
+        previous = current;
+        current = current->next;
+    }
+}

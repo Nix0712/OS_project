@@ -14,6 +14,8 @@ int _Semaphore::wait() {
     if (--val < 0)
         block();
 
+    if (TCB::running->isTimedWaitExpired())
+        val++;
     // If semaphore was closed while waiting
     if (TCB::running->GetIsClosedInSemaphore()) {
         return -1;
@@ -28,10 +30,13 @@ void _Semaphore::signal() {
 
 int _Semaphore::timedwait(time_t timeout) {
     TCB::running->setWaitTime(Scheduler::getTime() + timeout);
+    TCB::running->setTimedWaitExpired(false);
+    TCB::running->setSemaphore(this);
+    Scheduler::putTimed(TCB::running, TCB::running->getWaitTime());
     int ret = wait();
     if (ret == -1)
         return SEMDEAD;
-    else if (Scheduler::getTime() >= TCB::running->getWaitTime())
+    else if (TCB::running->isTimedWaitExpired())
         return TIMEOUT;
     return 0;
 }
