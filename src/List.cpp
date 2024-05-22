@@ -118,18 +118,15 @@ void Queue::removeTCB(TCB* tcb) {
 }
 
 // In case of timedWait()
-void Queue::removeSTQ(SleepingNode* sn) {
+void Queue::removeSTQ(TCB* sn) {
     Node* current = head;
     Node* previous = nullptr;
     while (current) {
-        if (current->data == (void*)sn) {
+        if (((SleepingNode*)current->data)->tcb == sn) {
             if (previous == nullptr) {
                 head = current->next;
             } else {
                 previous->next = current->next;
-            }
-            if (current == tail) {
-                tail = previous;
             }
             MemoryAllocator* alloc = MemoryAllocator::GetInstance();
             alloc->mem_free(current);

@@ -57,6 +57,10 @@ void _Semaphore::block() {
 
 void _Semaphore::deblock() {
     TCB* tcb = blocked.popTCB();
+    if (!tcb->isTimedWaitExpired()) {
+        Scheduler::removeTimed(tcb);
+    }
+
     if (tcb) {
         Scheduler::putReady(tcb);
     }

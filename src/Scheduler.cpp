@@ -27,6 +27,10 @@ void Scheduler::putTimed(TCB* tcb, time_t wakeUpTime) {
     tcb->setReady(false);
 }
 
+void Scheduler::removeTimed(TCB* tcb) {
+    timedThreadQueue.removeSTQ(tcb);
+    tcb->setSemaphore(nullptr);
+}
 TCB* Scheduler::getReady() {
     return readyThreadQueue.popTCB();
 }
