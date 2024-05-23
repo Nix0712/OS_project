@@ -1,9 +1,9 @@
 #include "../h/RiscV.hpp"
+#include "../h/Console.hpp"
 #include "../h/MemoryAllocator.hpp"
 #include "../h/Scheduler.hpp"
 #include "../h/Semaphore.hpp"
 #include "../h/TCB.hpp"
-#include "../h/console.h"
 #include "../h/syscall_c.hpp"
 
 void RiscV::supervisorTrapHandler() {
@@ -28,7 +28,11 @@ void RiscV::supervisorTrapHandler() {
         break;
     }
     case 0x8000000000000009UL: { // Supervisor external interrupt (console)
-        console_handler();
+        int a = plic_claim();
+        if (a == 10) {
+            _Console* console = _Console::GetInstance();
+            console->console_handler();
+        }
         break;
     }
 
@@ -156,14 +160,16 @@ void RiscV::supervisorTrapHandler() {
         }
 
         case GETC: {
-            char retVal = __getc();
+            _Console* console = _Console::GetInstance();
+            char retVal = console->_getc();
             write_reg(10, retVal);
             break;
         }
 
         case PUTC: {
             char a1 = (char)read_reg(11);
-            __putc(a1);
+            _Console* console = _Console::GetInstance();
+            console->_putc(a1);
             break;
         }
         default:
@@ -172,9 +178,6 @@ void RiscV::supervisorTrapHandler() {
         break;
     }
     case 0x0000000000000002UL: { // U-mode illegal instruction
-        __putc('J');
-        __putc('E');
-        __putc('S');
         // uint32 val = 0x5555;
         // uint64 addr = 0x100000;
         // __asm__ volatile("sw %[val], 0(%[addr])" : : [val] "r"(val), [addr] "r"(addr));

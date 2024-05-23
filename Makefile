@@ -9,7 +9,6 @@ KERNEL_ASM = kernel.asm
 
 LIBS = \
   ${DIR_LIBS}/hw.lib \
-  ${DIR_LIBS}/mem.lib \
   ${DIR_LIBS}/console.lib
 
 # riscv64-unknown-elf- or riscv64-linux-gnu-
@@ -112,7 +111,7 @@ clean:
 	rm -f ${KERNEL_IMG} ${KERNEL_ASM}
 	rm -fr ${DIR_BUILD}
 	rm -f .gdbinit
-
+	
 # try to generate a unique GDB port
 GDBPORT = $(shell expr `id -u` % 5000 + 25000)
 
@@ -138,4 +137,4 @@ qemu-gdb: ${KERNEL_IMG} .gdbinit
 # http://www.gnu.org/software/make/manual/html_node/Chained-Rules.html
 .PRECIOUS: %.o
 
--include $(shell find ${DIR_BUILD} -name "*.d")
+-include $(wildcard ${DIR_BUILD}/*.d)

@@ -1,6 +1,6 @@
+#include "../h/Console.hpp"
 #include "../h/RiscV.hpp"
 #include "../h/TCB.hpp"
-#include "../h/console.h"
 #include "../h/syscall_cpp.hpp"
 
 extern void userMain();
@@ -22,6 +22,13 @@ int main() {
 
     TCB::running = new TCB(nullptr, nullptr, nullptr);
     Thread* idleThread = new Thread(idle, nullptr);
+
+    _Console* console = _Console::GetInstance();
+    Thread* putcHandlerThread = new Thread(console->putc_handler_wrapper, nullptr);
+    putcHandlerThread->start();
+
+    Thread* getcHandlerThread = new Thread(console->getc_handler_wrapper, nullptr);
+    getcHandlerThread->start();
 
     Semaphore* sem = new Semaphore(0);
     idleThread->start();

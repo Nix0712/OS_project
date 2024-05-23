@@ -63,7 +63,7 @@ void TCB::dispatch() {
     MemoryAllocator* alloc = MemoryAllocator::GetInstance();
     if (!old->isFinished() && old->isReady()) {
         Scheduler::putReady(old);
-    } else if (old->finished) {
+    } else if (old->isFinished()) {
         alloc->mem_free(old->stack);
         alloc->mem_free(old);
     }
