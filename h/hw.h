@@ -12,7 +12,7 @@ typedef unsigned long uint64;
 typedef uint64 size_t;
 typedef uint64 time_t;
 
-static const size_t DEFAULT_STACK_SIZE = 4096 * 8;
+static const size_t DEFAULT_STACK_SIZE = 4096;
 static const size_t DEFAULT_TIME_SLICE = 2;
 
 extern const void* HEAP_START_ADDR;

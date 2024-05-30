@@ -5,7 +5,7 @@
 class MemoryAllocator {
   private:
     // LinkedList for allocated memory blocks
-    struct AllocMemBlocks {
+    struct AllocMemBlocks { // Node for allocated memory blocks, used for doubly linked list
         size_t BlockNum;
         AllocMemBlocks* next;
         AllocMemBlocks* prev;

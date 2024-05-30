@@ -33,7 +33,7 @@ class _Console {
 
     static bool getIsConsoleInterrupted();
 
-    static _Semaphore* mutex;
+    static _Semaphore* mutex; // Used to wait for getC
 
     _Console(_Console& other) = delete;
     void operator=(const _Console&) = delete;

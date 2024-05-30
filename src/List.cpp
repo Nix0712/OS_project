@@ -1,6 +1,7 @@
 #include "../h/List.hpp"
 #include "../h/MemoryAllocator.hpp"
 
+// Push TCB to the queue
 void Queue::pushTCB(TCB* data) {
     size_t numOfBlocks = ((sizeof(Node) + MEM_BLOCK_SIZE - 1) + 24UL) / MEM_BLOCK_SIZE;
     Node* newNode = (Node*)MemoryAllocator::GetInstance()->mem_alloc(numOfBlocks);
@@ -16,6 +17,7 @@ void Queue::pushTCB(TCB* data) {
     length++;
 }
 
+// Push SleepingNode to the queue
 void Queue::pushSortedSTQ(SleepingNode* data) {
     // Insert in sorted order but witout carrying about the tail so tail will be nullptr
     size_t numOfBlocks = ((sizeof(Node) + MEM_BLOCK_SIZE - 1) + 24UL) / MEM_BLOCK_SIZE;
@@ -46,6 +48,7 @@ void Queue::pushSortedSTQ(SleepingNode* data) {
     length++;
 }
 
+// Pop TCB from the queue
 TCB* Queue::popTCB() {
     MemoryAllocator* alloc = MemoryAllocator::GetInstance();
     if (head == nullptr)
@@ -60,6 +63,7 @@ TCB* Queue::popTCB() {
     return tcb;
 }
 
+// Pop SleepingNode from the queue
 SleepingNode* Queue::popSTQ() {
     MemoryAllocator* alloc = MemoryAllocator::GetInstance();
     if (head == nullptr)
@@ -74,28 +78,33 @@ SleepingNode* Queue::popSTQ() {
     return sleepingNode;
 }
 
+// get data from the front of the queue
 void* Queue::front() {
     if (head == nullptr)
         return nullptr;
     return head->data;
 }
 
+// get data from the back of the queue
 void* Queue::back() {
     if (tail == nullptr)
         return nullptr;
     return tail->data;
 }
 
+// get queue size
 int Queue::size() {
     return length;
 }
 
+// check if queue is empty
 bool Queue::empty() {
     if (length == 0)
         return true;
     return false;
 }
 
+// remove TCB from queue, this is used to remove TCB from semaphore blocked queue
 void Queue::removeTCB(TCB* tcb) {
     Node* current = head;
     Node* previous = nullptr;
@@ -119,7 +128,7 @@ void Queue::removeTCB(TCB* tcb) {
     }
 }
 
-// In case of timedWait()
+// In case of timedWait(), removing TCB from timedThreadQueue
 void Queue::removeSTQ(TCB* sn) {
     Node* current = head;
     Node* previous = nullptr;

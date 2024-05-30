@@ -4,8 +4,8 @@
 _Semaphore::~_Semaphore() {
     TCB* curr = blocked.popTCB();
     while (curr) {
+        curr->SetIsClosedInSemaphore(true);
         Scheduler::putReady(curr);
-
         curr = blocked.popTCB();
     }
 }
@@ -14,8 +14,10 @@ int _Semaphore::wait() {
     if (--val < 0)
         block();
 
+    // If timed timed wait expired we imitate signal so that we can use wait in the future
     if (TCB::running->isTimedWaitExpired())
         val++;
+
     // If semaphore was closed while waiting
     if (TCB::running->GetIsClosedInSemaphore()) {
         return -1;

@@ -1,10 +1,6 @@
 #pragma once
 
 #include "../h/List.hpp"
-#include "../h/Scheduler.hpp"
-#include "../h/TCB.hpp"
-#include "hw.h"
-
 class _Semaphore {
   public:
     _Semaphore(unsigned init = 1) : val(init), blocked() {}

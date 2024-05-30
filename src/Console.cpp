@@ -11,7 +11,7 @@ bool _Console::isConsoleInterrupted = false;
 _Semaphore* _Console::mutex;
 
 _Console::_Console() {
-    mutex = new _Semaphore(0);
+    mutex = new _Semaphore(0); // initialize mutex for getC
 }
 
 _Console* _Console::GetInstance() {
@@ -19,6 +19,7 @@ _Console* _Console::GetInstance() {
     return &consoleInstance;
 }
 
+// This function is used to get data from the console to the buffer
 void _Console::getc_handler() {
     _Console* console = _Console::GetInstance();
     while (true) {
@@ -31,7 +32,7 @@ void _Console::getc_handler() {
         if (receiveBit != 0 && console->isConsoleInterrupted) {
             console->getcDataBuffer[console->freeReceiveDataIndex] = *((char*)CONSOLE_RX_DATA);
             console->freeReceiveDataIndex = (console->freeReceiveDataIndex + 1) % 1024;
-            mutex->signal();
+            mutex->signal(); // signal that data is ready to read
         } else {
             if (receiveBit == 0 && transferBit == 0 && console->isConsoleInterrupted) {
                 console->isConsoleInterrupted = false;
@@ -42,6 +43,7 @@ void _Console::getc_handler() {
     }
 }
 
+// This function is used to send data from the buffer to the console
 void _Console::putc_handler() {
     _Console* console = _Console::GetInstance();
     while (true) {
@@ -64,8 +66,11 @@ void _Console::putc_handler() {
     }
 }
 
+// putC and getC used in sys calls
+
 void _Console::_putc(char chr) {
     _Console* console = _Console::GetInstance();
+    // In case that the buffer is full, wait until there is space to write
     while (sendDataIndex == (freeSendDataIndex + 1) % 1024)
         TCB::dispatch();
     console->putcDataBuffer[freeSendDataIndex] = chr;
@@ -74,13 +79,13 @@ void _Console::_putc(char chr) {
 
 char _Console::_getc() {
     _Console* console = _Console::GetInstance();
-    // while (receiveDataIndex == (freeReceiveDataIndex + 1) % 1024 || receiveDataIndex == freeReceiveDataIndex)
-    mutex->wait();
+    mutex->wait(); // Wait to receive data
     char c = console->getcDataBuffer[receiveDataIndex];
     receiveDataIndex = (receiveDataIndex + 1) % 1024;
     return c;
 }
 
+// It's just setting flag that we recived interrupt from console
 void _Console::console_handler() {
     isConsoleInterrupted = true;
 }

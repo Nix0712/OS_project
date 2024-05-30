@@ -1,8 +1,6 @@
 #include "../h/TCB.hpp"
 #include "../h/MemoryAllocator.hpp"
-#include "../h/RiscV.hpp"
 #include "../h/Scheduler.hpp"
-#include "../h/syscall_c.hpp"
 
 TCB* TCB::running = nullptr;
 
@@ -63,7 +61,7 @@ void TCB::dispatch() {
     MemoryAllocator* alloc = MemoryAllocator::GetInstance();
     if (!old->isFinished() && old->isReady()) {
         Scheduler::putReady(old);
-    } else if (old->isFinished()) {
+    } else if (old->isFinished()) { // After finishing the thread, free the memory of stack
         alloc->mem_free(old->stack);
         alloc->mem_free(old);
     }
@@ -72,6 +70,7 @@ void TCB::dispatch() {
         TCB::contextSwitch(&old->context, &running->context);
 }
 
+// Wrapper function for the thread body for calling the function in user mode
 void TCB::threadWrapper() {
     RiscV::extract_SSP_SPIE();
     running->body(running->arg);

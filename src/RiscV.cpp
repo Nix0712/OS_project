@@ -6,6 +6,7 @@
 #include "../h/TCB.hpp"
 #include "../h/syscall_c.hpp"
 
+// Trap handler for syscalls and interrupts in supervisor mode
 void RiscV::supervisorTrapHandler() {
     volatile uint64 scause = read_scause();
     volatile uint64 sepc = read_sepc();
@@ -24,7 +25,6 @@ void RiscV::supervisorTrapHandler() {
             TCB::running->timeSliceCounter = 0;
             TCB::dispatch();
         }
-
         break;
     }
     case 0x8000000000000009UL: { // Supervisor external interrupt (console)
@@ -178,14 +178,15 @@ void RiscV::supervisorTrapHandler() {
         break;
     }
     case 0x0000000000000002UL: { // U-mode illegal instruction
-        // uint32 val = 0x5555;
-        // uint64 addr = 0x100000;
-        // __asm__ volatile("sw %[val], 0(%[addr])" : : [val] "r"(val), [addr] "r"(addr));
-        TCB::running->setFinished(true);
-        TCB::dispatch();
+        uint32 val = 0x5555;
+        uint64 addr = 0x100000;
+        __asm__ volatile("sw %[val], 0(%[addr])" : : [val] "r"(val), [addr] "r"(addr));
         break;
     }
     default:
+        uint32 val = 0x5555;
+        uint64 addr = 0x100000;
+        __asm__ volatile("sw %[val], 0(%[addr])" : : [val] "r"(val), [addr] "r"(addr));
         break;
     }
 
@@ -194,6 +195,7 @@ void RiscV::supervisorTrapHandler() {
     write_sepc(sepc);
 }
 
+// Change priviledge level to unprivileged and jump to user mode (and enables interrupts )
 void RiscV::extract_SSP_SPIE() {
     __asm__ volatile("csrc sstatus, %0" ::"r"(SSTATUS_SPP));
     __asm__ volatile("csrw sepc, ra");

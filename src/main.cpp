@@ -23,7 +23,7 @@ int main() {
     TCB::running = new TCB(nullptr, nullptr, nullptr);
     Thread* idleThread = new Thread(idle, nullptr);
 
-    _Console* console = _Console::GetInstance();
+    _Console* console = _Console::GetInstance(); // Initiliaze console
     Thread* putcHandlerThread = new Thread(console->putc_handler_wrapper, nullptr);
     putcHandlerThread->start();
 

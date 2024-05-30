@@ -47,7 +47,9 @@ int thread_exit() {
 
     __asm__ volatile("ecall");
 
-    return 0;
+    int volatile ret;
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+    return ret;
 }
 
 void thread_dispatch() {
@@ -74,7 +76,9 @@ int sem_close(sem_t handle) {
 
     __asm__ volatile("ecall");
 
-    return 0;
+    int volatile ret;
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+    return ret;
 }
 
 int sem_wait(sem_t id) {
@@ -83,7 +87,9 @@ int sem_wait(sem_t id) {
 
     __asm__ volatile("ecall");
 
-    return 0;
+    int volatile ret;
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+    return ret;
 }
 
 int sem_signal(sem_t id) {
@@ -92,7 +98,9 @@ int sem_signal(sem_t id) {
 
     __asm__ volatile("ecall");
 
-    return 0;
+    int volatile ret;
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+    return ret;
 }
 
 int sem_timedwait(sem_t id, time_t timeout) {
@@ -113,7 +121,9 @@ int sem_trywait(sem_t id) {
 
     __asm__ volatile("ecall");
 
-    return 0;
+    int volatile ret;
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+    return ret;
 }
 
 int time_sleep(time_t time) {
@@ -122,7 +132,9 @@ int time_sleep(time_t time) {
 
     __asm__ volatile("ecall");
 
-    return 0;
+    int volatile ret;
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+    return ret;
 }
 
 char getc() {

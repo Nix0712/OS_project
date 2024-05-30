@@ -7,9 +7,9 @@ class Scheduler {
 
   private:
     static uint64 time;
-    static Queue readyThreadQueue;
-    static Queue sleepingThreadQueue;
-    static Queue timedThreadQueue;
+    static Queue readyThreadQueue;    // Queue of ready threads
+    static Queue sleepingThreadQueue; // Queue of threads that were put to sleep by time_sleep (it's sorted)
+    static Queue timedThreadQueue;    // Queue of threads that were put to sleep by semaphore timedwait (it's sorted)
 
   public:
     static void putReady(TCB* tcb);
