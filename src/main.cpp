@@ -4,6 +4,7 @@
 #include "../h/syscall_cpp.hpp"
 
 extern void userMain();
+extern void waitTest();
 
 void userMainWrapper(void* arg) {
     Semaphore* sem = (Semaphore*)arg;

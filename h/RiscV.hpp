@@ -77,6 +77,8 @@ class RiscV {
 
   private:
     static void supervisorTrapHandler();
+
+    static void print_String(char const* string);
 };
 
 inline uint64 RiscV::read_stvec() {

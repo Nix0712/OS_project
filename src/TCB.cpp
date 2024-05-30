@@ -1,5 +1,4 @@
 #include "../h/TCB.hpp"
-#include "../h/MemoryAllocator.hpp"
 #include "../h/Scheduler.hpp"
 
 TCB* TCB::running = nullptr;

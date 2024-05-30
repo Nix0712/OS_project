@@ -1,7 +1,7 @@
 #pragma once
 
+#include "../h/MemoryAllocator.hpp"
 #include "../h/RiscV.hpp"
-#include "../h/TCB.hpp"
 #include "../h/hw.h"
 #include "../h/syscall_c.hpp"
 
@@ -38,8 +38,9 @@ class TCB {
     static TCB* running;
 
     ~TCB() {
-        if (stack != nullptr)
-            mem_free(stack);
+        if (stack != nullptr) {
+            MemoryAllocator::GetInstance()->mem_free(stack);
+        }
     }
 
   private:

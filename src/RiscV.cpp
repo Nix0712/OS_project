@@ -178,21 +178,39 @@ void RiscV::supervisorTrapHandler() {
         break;
     }
     case 0x0000000000000002UL: { // U-mode illegal instruction
+        print_String("Illegal instruction, system will shut down\n");
         uint32 val = 0x5555;
         uint64 addr = 0x100000;
         __asm__ volatile("sw %[val], 0(%[addr])" : : [val] "r"(val), [addr] "r"(addr));
+        while (1)
+            ;
         break;
     }
     default:
+        print_String("Unknown error, system is shitting down\n");
         uint32 val = 0x5555;
         uint64 addr = 0x100000;
         __asm__ volatile("sw %[val], 0(%[addr])" : : [val] "r"(val), [addr] "r"(addr));
+        while (1)
+            ;
         break;
     }
 
     // Return from trap
     write_sstatus(sstatus);
     write_sepc(sepc);
+}
+
+// Private function that is used to print a string to the console in Supervisor mode
+void RiscV::print_String(char const* string) {
+    while (*string != '\0') {
+        uint8 cstatus = *((char*)CONSOLE_STATUS);
+        uint8 transferBit = cstatus & CONSOLE_TX_STATUS_BIT;
+        if (transferBit != 0) {
+            *((char*)CONSOLE_TX_DATA) = *string;
+            string++;
+        }
+    }
 }
 
 // Change priviledge level to unprivileged and jump to user mode (and enables interrupts )
