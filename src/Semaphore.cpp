@@ -5,6 +5,8 @@ _Semaphore::~_Semaphore() {
     TCB* curr = blocked.popTCB();
     while (curr) {
         curr->SetIsClosedInSemaphore(true);
+        if (!curr->isTimedWaitExpired())
+            Scheduler::removeTimed(curr);
         Scheduler::putReady(curr);
         curr = blocked.popTCB();
     }
