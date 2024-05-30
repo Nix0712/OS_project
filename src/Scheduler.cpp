@@ -12,7 +12,7 @@ void Scheduler::putReady(TCB* tcb) {
     tcb->setReady(true);
 }
 void Scheduler::putSleeping(TCB* tcb, time_t wakeUpTime) {
-    SleepingNode* sn = new SleepingNode;
+    SleepingNode* sn = (SleepingNode*)MemoryAllocator::GetInstance()->mem_alloc(sizeof(SleepingNode));
     sn->tcb = tcb;
     sn->wakeUpTime = wakeUpTime + time;
     sleepingThreadQueue.pushSortedSTQ(sn);
@@ -20,7 +20,7 @@ void Scheduler::putSleeping(TCB* tcb, time_t wakeUpTime) {
 }
 
 void Scheduler::putTimed(TCB* tcb, time_t wakeUpTime) {
-    SleepingNode* sn = new SleepingNode;
+    SleepingNode* sn = (SleepingNode*)MemoryAllocator::GetInstance()->mem_alloc(sizeof(SleepingNode));
     sn->tcb = tcb;
     sn->wakeUpTime = wakeUpTime;
     timedThreadQueue.pushSortedSTQ(sn);

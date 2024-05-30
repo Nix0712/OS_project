@@ -1,4 +1,5 @@
 #include "../h/MemoryAllocator.hpp"
+#include "../h/mem.h"
 
 // Returning instance of created MemoryAllocator (Singlton)
 MemoryAllocator* MemoryAllocator::GetInstance() {
@@ -8,6 +9,8 @@ MemoryAllocator* MemoryAllocator::GetInstance() {
 
 // Memory allocation for given number of blokcs
 void* MemoryAllocator::mem_alloc(size_t num_of_blocks) {
+    // return __mem_alloc(num_of_blocks);
+    num_of_blocks = ((num_of_blocks + MEM_BLOCK_SIZE - 1) + sizeof(AllocMemBlocks)) / MEM_BLOCK_SIZE;
     size_t freeBlocks;
 
     // Initial allocation for header Node
@@ -75,6 +78,7 @@ void* MemoryAllocator::mem_alloc(size_t num_of_blocks) {
 }
 
 size_t MemoryAllocator::mem_free(void* addr) {
+    // return __mem_free(addr);
     AllocMemBlocks* curr = (AllocMemBlocks*)((size_t)addr - sizeof(AllocMemBlocks));
     if (curr == nullptr)
         return -1;

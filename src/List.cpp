@@ -2,7 +2,7 @@
 #include "../h/MemoryAllocator.hpp"
 
 void Queue::pushTCB(TCB* data) {
-    Node* newNode = new Node;
+    Node* newNode = (Node*)MemoryAllocator::GetInstance()->mem_alloc(sizeof(Node));
     newNode->data = (void*)data;
     newNode->next = nullptr;
     if (head == nullptr) {
@@ -17,7 +17,7 @@ void Queue::pushTCB(TCB* data) {
 
 void Queue::pushSortedSTQ(SleepingNode* data) {
     // Insert in sorted order but witout carrying about the tail so tail will be nullptr
-    Node* newNode = new Node;
+    Node* newNode = (Node*)MemoryAllocator::GetInstance()->mem_alloc(sizeof(Node));
     newNode->data = data;
     newNode->next = nullptr;
 

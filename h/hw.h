@@ -1,18 +1,18 @@
 #pragma once
 
-typedef unsigned int   uint;
+typedef unsigned int uint;
 typedef unsigned short ushort;
-typedef unsigned char  uchar;
+typedef unsigned char uchar;
 
 typedef unsigned char uint8;
 typedef unsigned short uint16;
-typedef unsigned int  uint32;
+typedef unsigned int uint32;
 typedef unsigned long uint64;
 
 typedef uint64 size_t;
 typedef uint64 time_t;
 
-static const size_t DEFAULT_STACK_SIZE = 4096;
+static const size_t DEFAULT_STACK_SIZE = 4096 * 8;
 static const size_t DEFAULT_TIME_SLICE = 2;
 
 extern const void* HEAP_START_ADDR;
@@ -32,9 +32,9 @@ static const uint64 CONSOLE_RX_STATUS_BIT = 1;
 extern "C" {
 #endif
 
-    int plic_claim(void);
+int plic_claim(void);
 
-    void plic_complete(int irq);
+void plic_complete(int irq);
 
 #ifdef __cplusplus
 }
