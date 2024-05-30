@@ -12,7 +12,8 @@ void Scheduler::putReady(TCB* tcb) {
     tcb->setReady(true);
 }
 void Scheduler::putSleeping(TCB* tcb, time_t wakeUpTime) {
-    SleepingNode* sn = (SleepingNode*)MemoryAllocator::GetInstance()->mem_alloc(sizeof(SleepingNode));
+    size_t numOfBlocks = ((sizeof(SleepingNode) + MEM_BLOCK_SIZE - 1) + 24UL) / MEM_BLOCK_SIZE;
+    SleepingNode* sn = (SleepingNode*)MemoryAllocator::GetInstance()->mem_alloc(numOfBlocks);
     sn->tcb = tcb;
     sn->wakeUpTime = wakeUpTime + time;
     sleepingThreadQueue.pushSortedSTQ(sn);
@@ -20,7 +21,8 @@ void Scheduler::putSleeping(TCB* tcb, time_t wakeUpTime) {
 }
 
 void Scheduler::putTimed(TCB* tcb, time_t wakeUpTime) {
-    SleepingNode* sn = (SleepingNode*)MemoryAllocator::GetInstance()->mem_alloc(sizeof(SleepingNode));
+    size_t numOfBlocks = ((sizeof(SleepingNode) + MEM_BLOCK_SIZE - 1) + 24UL) / MEM_BLOCK_SIZE;
+    SleepingNode* sn = (SleepingNode*)MemoryAllocator::GetInstance()->mem_alloc(numOfBlocks);
     sn->tcb = tcb;
     sn->wakeUpTime = wakeUpTime;
     timedThreadQueue.pushSortedSTQ(sn);

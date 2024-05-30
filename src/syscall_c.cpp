@@ -1,7 +1,7 @@
 #include "../h/syscall_c.hpp"
 
 void* mem_alloc(size_t size) {
-    size_t num_of_blocks = size;
+    size_t num_of_blocks = ((size + MEM_BLOCK_SIZE - 1) + 24UL) / MEM_BLOCK_SIZE;
 
     __asm__ volatile("mv a1, %[num_of_blocks]" : : [num_of_blocks] "r"(num_of_blocks));
     __asm__ volatile("mv a0, %0" : : "r"(MEM_ALLOC));

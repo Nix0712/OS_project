@@ -2,7 +2,8 @@
 #include "../h/MemoryAllocator.hpp"
 
 void Queue::pushTCB(TCB* data) {
-    Node* newNode = (Node*)MemoryAllocator::GetInstance()->mem_alloc(sizeof(Node));
+    size_t numOfBlocks = ((sizeof(Node) + MEM_BLOCK_SIZE - 1) + 24UL) / MEM_BLOCK_SIZE;
+    Node* newNode = (Node*)MemoryAllocator::GetInstance()->mem_alloc(numOfBlocks);
     newNode->data = (void*)data;
     newNode->next = nullptr;
     if (head == nullptr) {
@@ -17,7 +18,8 @@ void Queue::pushTCB(TCB* data) {
 
 void Queue::pushSortedSTQ(SleepingNode* data) {
     // Insert in sorted order but witout carrying about the tail so tail will be nullptr
-    Node* newNode = (Node*)MemoryAllocator::GetInstance()->mem_alloc(sizeof(Node));
+    size_t numOfBlocks = ((sizeof(Node) + MEM_BLOCK_SIZE - 1) + 24UL) / MEM_BLOCK_SIZE;
+    Node* newNode = (Node*)MemoryAllocator::GetInstance()->mem_alloc(numOfBlocks);
     newNode->data = data;
     newNode->next = nullptr;
 

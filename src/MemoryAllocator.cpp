@@ -10,7 +10,6 @@ MemoryAllocator* MemoryAllocator::GetInstance() {
 // Memory allocation for given number of blokcs
 void* MemoryAllocator::mem_alloc(size_t num_of_blocks) {
     // return __mem_alloc(num_of_blocks);
-    num_of_blocks = ((num_of_blocks + MEM_BLOCK_SIZE - 1) + sizeof(AllocMemBlocks)) / MEM_BLOCK_SIZE;
     size_t freeBlocks;
 
     // Initial allocation for header Node
