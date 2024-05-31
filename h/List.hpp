@@ -1,5 +1,5 @@
 #pragma once
-#include "hw.h"
+#include "../lib/hw.h"
 
 class TCB;
 class SleepingNode {

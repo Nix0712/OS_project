@@ -2,7 +2,7 @@
 
 #include "../h/Semaphore.hpp"
 #include "../h/TCB.hpp"
-#include "./hw.h"
+#include "../lib/hw.h"
 
 class _Console {
   private:

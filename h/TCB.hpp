@@ -2,8 +2,8 @@
 
 #include "../h/MemoryAllocator.hpp"
 #include "../h/RiscV.hpp"
-#include "../h/hw.h"
 #include "../h/syscall_c.hpp"
+#include "../lib/hw.h"
 
 class _Semaphore;
 

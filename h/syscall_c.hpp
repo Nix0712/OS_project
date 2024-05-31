@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hw.h"
+#include "../lib/hw.h"
 
 enum calls {
     MEM_ALLOC = 0x01,

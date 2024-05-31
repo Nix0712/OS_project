@@ -1,7 +1,7 @@
 #pragma once
 
 // RiscV interface
-#include "../h/hw.h"
+#include "../lib/hw.h"
 
 /*
     Register description:

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hw.h"
+#include "../lib/hw.h"
 
 /*
  * The functions are intended to be used in supervisor mode, and they are not thread-safe
