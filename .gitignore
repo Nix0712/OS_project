@@ -1,8 +1,9 @@
 gdb.txt
 .gdbinit
-kernel*
 build/
 breakpoints
 .clang-format
 .vscode/c_cpp_properties.json
 test/
+kernel
+kernel.asm
