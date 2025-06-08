@@ -202,6 +202,8 @@ Additionally, a PDF related to this project has been published by the university
 ---
 
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Nix0712/OS_project)
+
 
 
 
